@@ -1,0 +1,379 @@
+{% extends "base.html" %}
+{% block title %}
+  Home
+{% endblock %}
+
+
+{% block divIzquierda %}
+ 
+  <!--Start sidebar-wrapper-->
+   <div id="sidebar-wrapper" data-simplebar="" data-simplebar-auto-hide="true">
+     <div class="brand-logo">
+      <a href="index.html">
+       <img src="/static/assets/images/logo-icon.png" class="logo-icon" alt="logo icon">
+       <h5 class="logo-text">Sistema de Ayuda</h5>
+      </a>
+    </div>
+   <div>
+
+
+    <textarea id="chat-log" cols="100" rows="20"></textarea><br>
+    <input id="chat-message-input" type="text" size="100"><br>
+
+    <input id="chat-message-submit" type="button" value="Send">
+    {{ room_name|json_script:"room-name" }}
+    <script>
+        const roomName = JSON.parse(document.getElementById('room-name').textContent);
+
+        const chatSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/chat/home/'
+        );
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+
+            if (data.tipoMsg=="1"){
+              document.querySelector('#chat-log').value += (data.message + '\n');
+            }if(data.tipoMsg=="2"){
+              alert(data.message);
+            }if (data.tipoMsg=="3") {
+              filaHtml = '<tr><td>{{oPersona.apellido}}, {{oPersona.nombre}}</td><td><img src="'+ data.imgPersona +'" alt="" height="50" width="55"></td><td><ul>'+ data.beneficiario +'</ul></td><td>-- </td><td>'+ data.fecha +'</td><td><div class="progress shadow" style="height: 3px;"><div class="progress-bar" role="progressbar" style="width: 0%"></div></div><br><button type="button" class="btn btn-block btn-success btn-lg" href="javascript:;" onclick="verDatos('+ data.idAyuda +');">Realizar pago</button></td></tr>';
+              $('#tbodyTablaAyuda').prepend(filaHtml);
+            }
+            console.log(data);
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+        document.querySelector('#chat-message-input').focus();
+        document.querySelector('#chat-message-input').onkeyup = function(e) {
+            if (e.keyCode === 13) {  // enter, return
+                document.querySelector('#chat-message-submit').click();
+            }
+        };
+
+        document.querySelector('#chat-message-submit').onclick = function(e) {
+            const messageInputDom = document.querySelector('#chat-message-input');
+            const message = messageInputDom.value;
+            chatSocket.send(JSON.stringify({
+                'message': message,
+                'tipoMsg': "1",
+            }));
+            messageInputDom.value = '';
+        };
+    </script>
+   </div>
+
+   <ul class="sidebar-menu do-nicescrol">
+      <li class="sidebar-header">Ayudas recientes</li>
+      <li>
+        <a href="index.html">
+          <i class="zmdi zmdi-view-dashboard"></i> <span>Dashboard</span>
+        </a>
+      </li>
+
+      <li>
+        <a href="icons.html">
+          <i class="zmdi zmdi-invert-colors"></i> <span>UI Icons</span>
+        </a>
+      </li>
+
+      <li>
+        <a href="forms.html">
+          <i class="zmdi zmdi-format-list-bulleted"></i> <span>Forms</span>
+        </a>
+      </li>
+
+      <li>
+        <a href="tables.html">
+          <i class="zmdi zmdi-grid"></i> <span>Tables</span>
+        </a>
+      </li>
+
+      <li>
+        <a href="calendar.html">
+          <i class="zmdi zmdi-calendar-check"></i> <span>Calendar</span>
+          <small class="badge float-right badge-light">New</small>
+        </a>
+      </li>
+
+      <li>
+        <a href="profile.html">
+          <i class="zmdi zmdi-face"></i> <span>Profile</span>
+        </a>
+      </li>
+
+      <li>
+        <a href="login.html" target="_blank">
+          <i class="zmdi zmdi-lock"></i> <span>Login</span>
+        </a>
+      </li>
+
+       <li>
+        <a href="register.html" target="_blank">
+          <i class="zmdi zmdi-account-circle"></i> <span>Registration</span>
+        </a>
+      </li>
+    
+    <li>
+        <a href="https://themeforest.net/item/dashtreme-multipurpose-bootstrap4-admin-template/23059455" target="_blank" class="pro-btn">
+          <i class="zmdi zmdi-cloud-upload"></i> <span>Upgrade To PRO</span>
+        </a>
+      </li>
+
+      <li class="sidebar-header">LABELS</li>
+      <li><a href="javaScript:void();"><i class="zmdi zmdi-coffee text-danger"></i> <span>Important</span></a></li>
+      <li><a href="javaScript:void();"><i class="zmdi zmdi-chart-donut text-success"></i> <span>Warning</span></a></li>
+      <li><a href="javaScript:void();"><i class="zmdi zmdi-share text-info"></i> <span>Information</span></a></li>
+
+    </ul>
+   
+  {% endblock %}
+
+
+  {% block contenido %}
+
+
+  <div class="card mt-3">
+    <div class="card-content">
+        <div class="row row-group m-0">
+            <div class="col-12 col-lg-6 col-xl-3 border-light">
+                <div class="card-body">
+                  <h5 class="text-white mb-0">9526 <span class="float-right"><i class="fa fa-shopping-cart"></i></span></h5>
+                    <div class="progress my-3" style="height:3px;">
+                       <div class="progress-bar" style="width:55%"></div>
+                    </div>
+                  <p class="mb-0 text-white small-font">Total Ayudas</p>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6 col-xl-3 border-light">
+                <div class="card-body">
+                  <h5 class="text-white mb-0">8323 <span class="float-right"><i class="fa fa-usd"></i></span></h5>
+                    <div class="progress my-3" style="height:3px;">
+                       <div class="progress-bar" style="width:55%"></div>
+                    </div>
+                  <p class="mb-0 text-white small-font">Dinero enviado</p>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6 col-xl-3 border-light">
+                <div class="card-body">
+                  <h5 class="text-white mb-0">6200 <span class="float-right"><i class="fa fa-eye"></i></span></h5>
+                    <div class="progress my-3" style="height:3px;">
+                       <div class="progress-bar" style="width:55%"></div>
+                    </div>
+                  <p class="mb-0 text-white small-font">Usuarios conectados
+                  </p>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6 col-xl-3 border-light">
+                <div class="card-body">
+                  <h5 class="text-white mb-0">5630 <span class="float-right"><i class="fa fa-envira"></i></span></h5>
+                    <div class="progress my-3" style="height:3px;">
+                       <div class="progress-bar" style="width:55%"></div>
+                    </div>
+                  <a href="" target="_blank" ><p class="mb-0 text-white small-font">Colaboradores <span class="float-right"><b>Registrarse como colaborador</b></span></p></a>
+                </div>
+            </div>
+        </div>
+    </div>
+ </div>  
+  
+  <div class="row mt-3">
+   <div class="col-12 col-lg-12">
+     <div class="card">
+       <div class="card-header">Ayudas recientes
+      <div class="card-action">
+             <div class="dropdown">
+             <a href="javascript:void();" class="dropdown-toggle dropdown-toggle-nocaret" data-toggle="dropdown">
+              <i class="icon-options"></i>
+             </a>
+             </div>
+             </div>
+     </div>
+         <div class="table-responsive">
+                 <table class="table align-items-center table-flush table-borderless">
+                  <thead>
+                   <tr>
+                     <th>Beneficiario</th>
+                     <th>Foto</th>
+                     <th>Tipos de Operaciones</th>
+                     <th>Nro Operación</th>
+                     <th>Fecha</th>
+                     <th>Estado</th>
+                   </tr>
+                   </thead>
+                   <tbody id="tbodyTablaAyuda">
+                    {%for oOperacion in oOperaciones %}
+                    <a href="">
+                      <tr>
+                        {%for oPersona in oOperacion.personas.all %}
+                        <td>{{oPersona.apellido}}, {{oPersona.nombre}}</td>
+                        <td><img src="{{oPersona.imgpersona.url}}" alt="" height="50" width="55"></td>
+                        <td>
+                          <ul>
+                          {%for oTipoOP in oPersona.tipooperacions.all %}
+                            <li>{{oTipoOP.nombre}}</li>
+                          {%endfor%}
+                          </ul>
+                        </td>
+                        <td>{{oOperacion.nrooperacion}} </td>
+                        <td>{{oOperacion.fecha}} </td>
+                        <td>
+                          <div class="progress shadow" style="height: 3px;">
+                          <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                          </div>
+                          <br>
+                          <button type="button" class="btn btn-block btn-success btn-lg" href='javascript:;' onclick="verDatos({{oOperacion.id}});">Realizar pago</button>
+                        </td>
+                        {%empty%}
+                        {%endfor%}
+                      </tr>
+                    </a>
+                    {%endfor%}
+
+                 </tbody></table>
+               </div>
+     </div>
+   </div>
+   <!--start color modal-->
+   <div class="modal fade" id="modal-ayuda" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content" style="color: #dc3545">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <br>
+            </div>
+            <div class="modal-body">
+                <div class="card profile-card-2">
+                  <div class="card-img-block">
+                    <img id="imgHogar" class="img-fluid" src="https://via.placeholder.com/800x500" alt="Tapa de imagen de tarjeta">
+                  </div>
+                  <div class="card-body pt-5">
+                    <img id="imgPersona" src="https://via.placeholder.com/110x110" alt="imagen de perfil" class="profile">
+                    <h5><u>PID Operación:</u></h5>
+                    <h5 id="idoperacion"></h5>
+                    <h5><u>Persona:</u> </h5><h5 id="ncPersona"></h5>
+                    <h5><u>Teléfono:</u> </h5><h5 id="telefono"></h5>
+                    <h5><u>E-Mail:</u> </h5><h5 id="email"></h5>
+                    <h5><u>Dirección:</u> </h5><h5 id="direccion"></h5>
+                    <p id="descripcion">
+                      
+                    </p>
+                    <div class="icon-block" id="TipoOperaciones">
+                      <h5><u>Metodos aceptados para ayuda:</u> </h5>
+                       
+                    </div>
+                    <div class="icon-block" >
+                      <center><div id="mapid" style="width: 100%; height: 250px;" class="col-sm"></div></center>
+                      <form method="POST" class="post-form" enctype="multipart/form-data"> 
+                  {% csrf_token %}
+                  
+                  <br>
+                        <label>Monto a pagar: </label> <input type="number" required class="form-control" id="monto" placeholder="S/. 0.00" onkeypress="return runScript(event)">
+                  <br>
+                      <button type="submit" class="btn btn-success btn-block btn-flat">Ayudar</button>
+                    </div>
+                  </div>
+          
+                  
+                </div>
+                
+            </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+          <!-- /.modal-dialog -->
+    </div>
+  <!--end color modal-->
+  
+  {% endblock  %}
+
+
+  {% block footer %}
+  <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js" integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og==" crossorigin=""></script>
+
+  <script type="text/javascript">
+  function CargarMapa(coordX,coordY){
+      //DOM manipulation code
+      mymap = L.map('mapid').setView([coordX, coordY], 15);
+      L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+          maxZoom: 18,
+          attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+              '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+              'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+          id: 'mapbox.streets'
+      }).addTo(mymap);
+       
+      theMarker = L.marker([coordX, coordY]);
+      L.marker([ coordX, coordY]).addTo(mymap);
+      var popup = L.popup();
+
+      function onMapClick(e) {
+          popup
+              .setLatLng(e.latlng)
+              .setContent(" " + e.latlng.toString())
+              .openOn(mymap);
+      }
+      mymap.on('click', onMapClick);
+  }
+
+    function verDatos(IdOp) {
+        $("#modal-ayuda").modal('show');
+        console.log("Abriendo modal");
+        var datos = {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+            idOperacion : IdOp,
+        }
+        console.log(IdOp);
+        var sendData = JSON.stringify(datos); 
+        var Datos;
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/ayuda/getDatos/",
+            data: sendData,
+            contentType: "application/json; charset=utf-8",
+            async: false,
+            cache: false,
+            CrossDomain: true,
+
+            success: function (result) {
+                Datos = result;
+                console.log(Datos);
+                if (result.exito==1) {
+                    $("#imgPersona").attr("src",result.imgpersona);
+                    $("#imgHogar").attr("src",result.imghogar);
+                    $("#ncPersona").text(result.apellido+', '+result.nombre);
+                    $("#telefono").text(result.telefono);
+                    var idOp = result.idoperacion;
+                    $("#idoperacion").text(idOp);
+                    $("#email").text(result.email);
+                    $("#direccion").text(result.direccion);
+                    $("#monto").val(result.montoayuda);
+                    console.log(result.tipooperacions);
+                    $.each(result.tipooperacions, function( i, val ){
+                      tipoOpHtml = "<div><a target='_blank' href='"+val.documento+"'><img title='Dar Click en imágen para descargar documento del: "+val.nombre+"' src='"+val.imagen+"' height='50' width='55'></a><p>"+val.nombre+"</p></div>"
+                      tipoOpHtml = tipoOpHtml + tipoOpHtml;
+                      $("#TipoOperaciones").append(tipoOpHtml);
+                    });
+                    CargarMapa(result.coordx,result.coordy);
+                }
+                else{
+                    alert("Se registró tratar error de vlidacion  estado op!");
+                    $("#modal-marcado").modal('hide');
+                    location.reload();
+                }
+            }
+        });
+  }
+  </script>
+
+{% endblock %}  
